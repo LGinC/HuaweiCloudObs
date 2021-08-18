@@ -23,15 +23,26 @@ namespace HuaweiCloudObs
 		}
 
 		/// <summary>
-		/// 签名
+		/// 
 		/// </summary>
-		/// <param name="accessKey">AK</param>
-		/// <param name="secretKey">SK</param>
-		/// <param name="method">Http请求方法</param>
-		/// <param name="headers">http请求头</param>
-		/// <param name="resource">访问的资源</param>
+		/// <param name="data"></param>
 		/// <returns></returns>
-		public static string GetSign(string accessKey, string secretKey, string method, Dictionary<string, IEnumerable<string>> headers, string query)
+        public static string Md5(byte[] data)
+        {
+			using var md5 = new MD5CryptoServiceProvider();
+			return Convert.ToBase64String(md5.ComputeHash(data));
+        }
+
+        /// <summary>
+        /// 签名
+        /// </summary>
+        /// <param name="accessKey">AK</param>
+        /// <param name="secretKey">SK</param>
+        /// <param name="method">Http请求方法</param>
+        /// <param name="headers">http请求头</param>
+        /// <param name="resource">访问的资源</param>
+        /// <returns></returns>
+        public static string GetSign(string accessKey, string secretKey, string method, Dictionary<string, IEnumerable<string>> headers, string query)
 		{
 			return GetSignInternal(accessKey, secretKey, method, headers, query);	
 		}
@@ -43,6 +54,7 @@ namespace HuaweiCloudObs
 			//当有自定义字段x-obs-date时，参数date按照空字符串处理；
 			string date = headers.ContainsKey("x-obs-date") ? string.Empty : headers.FirstOrDefault(h => h.Key == "date").Value?.First();
 			string stringToSign = GetStringToSign(method, md5, contentType, date, GetCanonicalizedHeaders(headers), resource);
+            Console.WriteLine(stringToSign);
 			return $"OBS {accessKey}:{HmacSha1(secretKey, stringToSign)}";
 		}
 

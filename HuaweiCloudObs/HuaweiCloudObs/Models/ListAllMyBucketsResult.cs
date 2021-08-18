@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace HuaweiCloudObs.Models
 {
     [XmlRoot("ListAllMyBucketsResult", Namespace = "http://obs.myhwclouds.com/doc/2015-06-30/")]
-    public class ListAllMyBucketsResult
+    public class ListAllMyBucketsResult : BaseResult
     {
         /// <summary>
         /// 桶所有者
@@ -14,6 +14,8 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 桶列表
         /// </summary>
+        [XmlArray("Buckets")]
+        [XmlArrayItem("Bucket")]
         public List<BucketInfo> Buckets {  get; set; }
     }
 

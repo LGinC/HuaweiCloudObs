@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Options;
+﻿using HuaweiCloudObs.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace HuaweiCloudObs
 {
@@ -27,7 +29,7 @@ namespace HuaweiCloudObs
         /// <param name="queries">多个资源请求</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<string> SendAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null,  CancellationToken cancellationToken = default)
+        public async Task<T> SendAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null,  CancellationToken cancellationToken = default)
         {
             request.Headers.Add("Date", DateTimeOffset.UtcNow.ToString("r"));
             var headers = request.Headers.ToDictionary(h => h.Key.ToLower(), h => h.Value);
@@ -41,11 +43,23 @@ namespace HuaweiCloudObs
             }
             var options = Options.Value;
             var sign = !string.IsNullOrEmpty(query)
-                ? Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), request.Headers.ToDictionary(h => h.Key.ToLower(), h => h.Value), query)
-                : Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), request.Headers.ToDictionary(h => h.Key.ToLower(), h => h.Value), queries);
+                ? Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), headers, query)
+                : Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), headers, queries);
             request.Headers.Add("Authorization", sign);
             var result = await Client.SendAsync(request, cancellationToken);
-            return await result.Content.ReadAsStringAsync();
+            //Console.WriteLine(await result.Content.ReadAsStringAsync());
+            using var stream = await result.Content.ReadAsStreamAsync();
+            if (result.IsSuccessStatusCode)
+            {
+                if(typeof(T) == typeof(BaseResult))
+                {
+                    return default;
+                }
+                return (T)new XmlSerializer(typeof(T)).Deserialize(stream);
+            }
+            var e = (ErrorResult)new XmlSerializer(typeof(ErrorResult)).Deserialize(stream);
+            //TODO：写入到日志
+            throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
     }
 }

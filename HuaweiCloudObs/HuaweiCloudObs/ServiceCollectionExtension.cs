@@ -5,7 +5,7 @@ using Polly.Extensions.Http;
 
 namespace HuaweiCloudObs
 {
-    public static class ServiceExtension
+    public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddHuaweiCloudObs(this IServiceCollection serviceCollection, IConfigurationRoot configuration)
         {
@@ -15,6 +15,7 @@ namespace HuaweiCloudObs
                 .RetryAsync(3));//重试3次
 
             serviceCollection.AddTransient<IObsBucketApi, ObsBucketApi>();
+            serviceCollection.AddTransient<IObsObjectApi, ObsObjectApi>();
             return serviceCollection;
         }
     }
