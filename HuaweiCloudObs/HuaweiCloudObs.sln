@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuaweiCloudObs", "HuaweiCloudObs\HuaweiCloudObs.csproj", "{C0A04F47-D8E8-49FD-916E-1AC5681E3715}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObsTest", "ObsTest\ObsTest.csproj", "{5AA4032C-B96F-4238-8D85-D136045C5E3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0A04F47-D8E8-49FD-916E-1AC5681E3715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A04F47-D8E8-49FD-916E-1AC5681E3715}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A04F47-D8E8-49FD-916E-1AC5681E3715}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A04F47-D8E8-49FD-916E-1AC5681E3715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A221CFEE-0E0C-4DE1-80B9-7477F0C76204}
+	EndGlobalSection
+EndGlobal
