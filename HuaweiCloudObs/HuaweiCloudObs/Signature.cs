@@ -54,7 +54,7 @@ namespace HuaweiCloudObs
 			//当有自定义字段x-obs-date时，参数date按照空字符串处理；
 			string date = headers.ContainsKey("x-obs-date") ? string.Empty : headers.FirstOrDefault(h => h.Key == "date").Value?.First();
 			string stringToSign = GetStringToSign(method, md5, contentType, date, GetCanonicalizedHeaders(headers), resource);
-            Console.WriteLine(stringToSign);
+            //Console.WriteLine(stringToSign);
 			return $"OBS {accessKey}:{HmacSha1(secretKey, stringToSign)}";
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using HuaweiCloudObs.Models;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HuaweiCloudObs
@@ -20,5 +21,14 @@ namespace HuaweiCloudObs
         /// <param name="data">对象数据</param>
         /// <returns></returns>
         Task PutAsync(string name, byte[] data, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 获取对象内容数组
+        /// </summary>
+        /// <param name="name">对象名</param>
+        /// <param name="input">附加参数</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<byte[]> GetBytesAsync(string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
     }
 }
