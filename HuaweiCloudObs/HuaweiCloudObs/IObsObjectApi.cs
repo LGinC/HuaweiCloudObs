@@ -1,4 +1,7 @@
 ﻿using HuaweiCloudObs.Models;
+using JetBrains.Annotations;
+using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +23,17 @@ namespace HuaweiCloudObs
         /// <param name="name">对象名</param>
         /// <param name="data">对象数据</param>
         /// <returns></returns>
-        Task PutAsync(string name, byte[] data, CancellationToken cancellationToken = default);
+        Task PutAsync([NotNull] string name, [NotNull] byte[] data, CancellationToken cancellationToken = default);
+
+
+        /// <summary>
+        /// 获取对象流
+        /// </summary>
+        /// <param name="name">对象名</param>
+        /// <param name="input">附加参数</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Stream> GetAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 获取对象内容数组
@@ -29,6 +42,32 @@ namespace HuaweiCloudObs
         /// <param name="input">附加参数</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<byte[]> GetBytesAsync(string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
+        Task<byte[]> GetBytesAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 获取对象 http响应
+        /// </summary>
+        /// <param name="name">对象名</param>
+        /// <param name="input">附加参数</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<HttpResponseMessage> GetResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 删除对象
+        /// </summary>
+        /// <param name="name">对象名</param>
+        /// <param name="versionId">版本</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteAsync([NotNull] string name, string versionId = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 批量删除对象
+        /// </summary>
+        /// <param name="input">参数</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<DeleteObjectsResult> DeleteBatchAsync([NotNull] DeleteObjectsRequest input, CancellationToken cancellationToken = default);
     }
 }

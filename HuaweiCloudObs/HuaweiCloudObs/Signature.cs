@@ -33,6 +33,17 @@ namespace HuaweiCloudObs
 			return Convert.ToBase64String(md5.ComputeHash(data));
         }
 
+		public static string Sha256(string body)
+        {
+            //Console.WriteLine(body);
+			if (string.IsNullOrWhiteSpace(body))
+			{
+				return string.Empty;
+			}
+            using var sha = SHA256.Create();
+            return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(body)));
+        }
+
         /// <summary>
         /// 签名
         /// </summary>
@@ -55,7 +66,7 @@ namespace HuaweiCloudObs
 			string date = headers.ContainsKey("x-obs-date") ? string.Empty : headers.FirstOrDefault(h => h.Key == "date").Value?.First();
 			string stringToSign = GetStringToSign(method, md5, contentType, date, GetCanonicalizedHeaders(headers), resource);
             //Console.WriteLine(stringToSign);
-			return $"OBS {accessKey}:{HmacSha1(secretKey, stringToSign)}";
+            return $"OBS {accessKey}:{HmacSha1(secretKey, stringToSign)}";
 		}
 
 		static string GetResource(SortedDictionary<string, string> queries)

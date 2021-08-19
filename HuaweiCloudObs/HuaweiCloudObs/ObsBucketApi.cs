@@ -1,4 +1,5 @@
 ﻿using HuaweiCloudObs.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading;
@@ -8,7 +9,7 @@ namespace HuaweiCloudObs
 {
     public class ObsBucketApi : BaseObsApi, IObsBucketApi
     {
-        public ObsBucketApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory) : base(options, factory)
+        public ObsBucketApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory, ILogger<ObsBucketApi> logger) : base(options, factory, logger)
         {
         }
 

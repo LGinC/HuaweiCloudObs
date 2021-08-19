@@ -1,4 +1,5 @@
 ﻿using HuaweiCloudObs.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -7,19 +8,22 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace HuaweiCloudObs
 {
     public abstract class BaseObsApi
     {
+        private IHttpClientFactory factory;
+
         protected HttpClient Client { get; set; }
         protected IOptionsSnapshot<HuaweicloudObsOptions> Options { get; set; }
+        protected ILogger Logger {  get; set; }
 
-        protected BaseObsApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory)
+        protected BaseObsApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory, ILogger<BaseObsApi> logger)
         {
             Options = options;
-            Client = factory.CreateClient(ObsConsts.ClientName);
+            this.factory = factory;
+            Logger = logger;
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace HuaweiCloudObs
                     continue;
                 }
 
-                request.Headers.Add(((XmlNameAttribute)p.GetCustomAttributes(typeof(XmlNameAttribute), false)[0]).Name, v);
+                request.Headers.TryAddWithoutValidation(((XmlNameAttribute)p.GetCustomAttributes(typeof(XmlNameAttribute), false)[0]).Name, v);
             }
         }
 
@@ -72,6 +76,7 @@ namespace HuaweiCloudObs
                 : Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), headers, queries);
             request.Headers.Add("Authorization", sign);
             var result = await Client.SendAsync(request, cancellationToken);
+            //Console.WriteLine(await result.Content.ReadAsStringAsync());
             if (result.IsSuccessStatusCode)
             {
                 switch (resultType)
@@ -79,7 +84,7 @@ namespace HuaweiCloudObs
                     case ResultType.Object:
                         using (var stream = await result.Content.ReadAsStreamAsync())
                         {
-                            return (T)new XmlSerializer(typeof(T)).Deserialize(stream);
+                            return ObsXmlSerializer.Deserialize<T>(stream);
                         }
                     case ResultType.Task:
                         return default;
@@ -87,6 +92,8 @@ namespace HuaweiCloudObs
                         return await result.Content.ReadAsStreamAsync();
                     case ResultType.Bytes:
                         return await result.Content.ReadAsByteArrayAsync();
+                    case ResultType.HttpResponse:
+                        return result;
                     default:
                         break;
                 }
@@ -98,9 +105,9 @@ namespace HuaweiCloudObs
             {
                 return null;
             }
-            var e = (ErrorResult)new XmlSerializer(typeof(ErrorResult)).Deserialize(eStream);
-            //TODO：写入到日志
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(e));
+            var e =  ObsXmlSerializer.Deserialize<ErrorResult>(eStream);
+            Logger.LogError("obs请求失败", request);
+            Logger.LogError(System.Text.Json.JsonSerializer.Serialize(e));
             throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
 
@@ -125,7 +132,7 @@ namespace HuaweiCloudObs
         /// <param name="queries">多个资源请求</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task SendNoReturnAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
+        public Task SendNoReturnAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
             return SendInternalAsync<Task>(request, query, queries, ResultType.Task, cancellationToken);
         }
@@ -154,6 +161,11 @@ namespace HuaweiCloudObs
         public async Task<byte[]> SendAndReturnBytesAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
             return (byte[])await SendInternalAsync<byte[]>(request, query, queries, ResultType.Bytes, cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> SendAndReturnResponseAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
+        {
+            return (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken);
         }
     }
 }

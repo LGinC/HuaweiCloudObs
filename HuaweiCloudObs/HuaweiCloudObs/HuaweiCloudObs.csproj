@@ -4,14 +4,26 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
     <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Authors>Liguo</Authors>
+    <Description>华为云OBS .net5 sdk</Description>
+    <RepositoryUrl>https://github.com/LGinC/HuaweiCloudObs</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>HuaweiCloud OBS</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>

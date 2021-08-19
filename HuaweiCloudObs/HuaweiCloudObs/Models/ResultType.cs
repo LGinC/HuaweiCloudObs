@@ -5,6 +5,7 @@
         Object,
         Task,
         Stream,
-        Bytes
+        Bytes,
+        HttpResponse
     }
 }

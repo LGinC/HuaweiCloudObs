@@ -7,6 +7,8 @@ namespace HuaweiCloudObs.Models
     /// </summary>
     public class GetObjectRequest
     {
+        //TODO: range
+
         /// <summary>
         /// 重写响应请求头
         /// </summary>
@@ -33,6 +35,14 @@ namespace HuaweiCloudObs.Models
         /// </summary>
         [XmlName("attname")]
         public string Attname { get; set; }
+
+        /// <summary>
+        /// 获取对象时，获取在Range范围内的对象内容,如果Range不合法则忽略此字段获取整个对象  索引从0开始
+        /// <para>bytes=0-4  获取对象的前5个字节</para>
+        /// <para>bytes=10-20,30-40 获取对象的10-20字节和30-40字节</para>
+        /// </summary>
+        [XmlName("Range")]
+        public string Range { get; set; }
 
         /// <summary>
         /// 如果对象的ETag和请求中指定的ETag相同，则返回对象内容，否则的话返回412（precondition failed）

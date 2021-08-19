@@ -1,10 +1,11 @@
 ﻿using HuaweiCloudObs.Models;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace HuaweiCloudObs
 {
     public class ObsObjectApi : BaseObsApi, IObsObjectApi
     {
-        public ObsObjectApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory) : base(options, factory)
+        public ObsObjectApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory, ILogger<ObsObjectApi> logger) : base(options, factory, logger)
         {
         }
 
@@ -32,7 +33,7 @@ namespace HuaweiCloudObs
             HttpRequestMessage request = new(HttpMethod.Put, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
             request.Content = new ByteArrayContent(data);
             request.Content.Headers.Add("Content-MD5", Signature.Md5(data));
-            return SendAsync<BaseResult>(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+            return SendNoReturnAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
 
@@ -40,12 +41,11 @@ namespace HuaweiCloudObs
         {
             CheckSetBucket();
             HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
-            if(input == null)
+            if (input != null)
             {
-                return SendAndReturnStreamAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+                SetHeaders(request, input);
             }
-
-            return null;
+            return SendAndReturnStreamAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
         public Task<byte[]> GetBytesAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default)
@@ -56,15 +56,42 @@ namespace HuaweiCloudObs
             {
                 SetHeaders(request, input);
             }
-
-            //Console.WriteLine();
-            //Console.WriteLine();
-            //Console.WriteLine("Headers");
-            //foreach (var h in request.Headers)
-            //{
-            //    Console.WriteLine($"{h.Key}:{h.Value.FirstOrDefault()}");
-            //}
             return SendAndReturnBytesAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+        }
+
+        public Task<HttpResponseMessage> GetResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default)
+        {
+            CheckSetBucket();
+            HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
+            if (input != null)
+            {
+                SetHeaders(request, input);
+            }
+            return SendAndReturnResponseAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+        }
+
+        public Task DeleteAsync([NotNull] string name, string versionId = null, CancellationToken cancellationToken = default)
+        {
+            CheckSetBucket();
+            HttpRequestMessage request = new(HttpMethod.Delete, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
+            if(!string.IsNullOrWhiteSpace(versionId))
+            {
+                request.Headers.Add(nameof(versionId), versionId);
+            }
+
+            return SendNoReturnAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+        }
+
+        public  Task<DeleteObjectsResult> DeleteBatchAsync([NotNull] DeleteObjectsRequest input, CancellationToken cancellationToken = default)
+        {
+            CheckSetBucket();
+            var s = ObsXmlSerializer.Serialize(input);
+            HttpRequestMessage request = new(HttpMethod.Post, $"https://{Bucket}.{Options.Value.EndPoint}/?delete")
+            {
+                Content = new StringContent(s.ToString(), Encoding.UTF8,"application/xml")
+            };
+            request.Headers.Add("Content-SHA256", Signature.Sha256(s.ToString()));
+            return SendAsync<DeleteObjectsResult>(request, $"/{Bucket}/?delete",  cancellationToken: cancellationToken);
         }
     }
 }
