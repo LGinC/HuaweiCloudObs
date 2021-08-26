@@ -20,6 +20,11 @@ namespace HuaweiCloudObs
             return SendAsync<ListAllMyBucketsResult>(request, "\n/", cancellationToken: cancellationToken);
         }
 
-
+        public Task<ListBucketResult> GetObjectsAsync(string bucket, GetObjectsRequest requestParameters = null, CancellationToken cancellationToken = default)
+        {
+            HttpRequestMessage request = new(HttpMethod.Get, $"https://{bucket}.{Options.Value.EndPoint}");
+            request.SetQueryParam(requestParameters);
+            return SendAsync<ListBucketResult>(request, $"/{bucket}/", cancellationToken: cancellationToken);
+        }
     }
 }

@@ -74,7 +74,7 @@ namespace HuaweiCloudObs
             }
             var e =  ObsXmlSerializer.Deserialize<ErrorResult>(eStream);
             Logger.LogError("obs请求失败", request);
-            Logger.LogError(System.Text.Json.JsonSerializer.Serialize(e));
+            Logger.LogError(System.Text.Json.JsonSerializer.Serialize(e, new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
             throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
 

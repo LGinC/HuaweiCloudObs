@@ -25,5 +25,10 @@ namespace HuaweiCloudObs.Models
         /// 拥有者id
         /// </summary>
         public string ID { get; set; }
+
+        /// <summary>
+        /// 租户id
+        /// </summary>
+        public string DomainId { get; set; }
     }
 }
