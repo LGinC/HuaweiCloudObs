@@ -23,7 +23,7 @@ namespace HuaweiCloudObs
         /// <param name="name">对象名</param>
         /// <param name="data">对象数据</param>
         /// <returns></returns>
-        Task PutAsync([NotNull] string name, [NotNull] byte[] data, CancellationToken cancellationToken = default);
+        Task PutAsync([NotNull] string name, [NotNull] byte[] data, XobsHeaders headers = null, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace HuaweiCloudObs
         /// <param name="input">附加参数</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> GetResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> GetObjectResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 删除对象

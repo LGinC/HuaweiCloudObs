@@ -27,10 +27,11 @@ namespace HuaweiCloudObs
             }
         }
 
-        public Task PutAsync([NotNull]string name, [NotNull] byte[] data, CancellationToken cancellationToken = default)
+        public Task PutAsync([NotNull]string name, [NotNull] byte[] data, XobsHeaders headers = null, CancellationToken cancellationToken = default)
         {
             CheckSetBucket();
             HttpRequestMessage request = new(HttpMethod.Put, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
+            SetHeaders(request, headers);
             request.Content = new ByteArrayContent(data);
             request.Content.Headers.Add("Content-MD5", Signature.Md5(data));
             return SendNoReturnAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
@@ -59,7 +60,7 @@ namespace HuaweiCloudObs
             return SendAndReturnBytesAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
-        public Task<HttpResponseMessage> GetResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default)
+        public Task<HttpResponseMessage> GetObjectResponseAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default)
         {
             CheckSetBucket();
             HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");

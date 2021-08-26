@@ -35,15 +35,19 @@ namespace HuaweiCloudObs
         {
             foreach (var p in input.GetType().GetProperties().Where(p => p.PropertyType.IsPublic))
             {
-                var value = p.GetValue(input);
+                object value = p.GetValue(input);
                 if(value == null)
                 {
                     continue;
                 }
+
                 string v = value switch
                 {
                     DateTimeOffset t => t.ToString("r"),
                     string t => t,
+                    int t => t.ToString(),
+                    float t => t.ToString(),
+                    decimal t => t.ToString(),
                     _ => null
                 };
 

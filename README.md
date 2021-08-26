@@ -64,7 +64,7 @@ public class MyObsAppService : ApplicationService
 + [x] [PUT上传](https://support.huaweicloud.com/api-obs/obs_04_0080.html)
 + [ ] [POST上传](https://support.huaweicloud.com/api-obs/obs_04_0081.html)
 + [ ] [复制对象](https://support.huaweicloud.com/api-obs/obs_04_0082.html)
-+ [ ] [获取对象内容](https://support.huaweicloud.com/api-obs/obs_04_0083.html)
++ [x] [获取对象内容](https://support.huaweicloud.com/api-obs/obs_04_0083.html)
 + [ ] [获取对象元数据](https://support.huaweicloud.com/api-obs/obs_04_0084.html)
 + [x] [删除对象](https://support.huaweicloud.com/api-obs/obs_04_0085.html)
 + [x] [批量删除对象](https://support.huaweicloud.com/api-obs/obs_04_0086.html)
