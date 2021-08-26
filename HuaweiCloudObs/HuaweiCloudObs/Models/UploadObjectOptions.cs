@@ -2,7 +2,7 @@
 
 namespace HuaweiCloudObs.Models
 {
-    public class XobsHeaders
+    public class UploadObjectOptions
     {
         /// <summary>
         /// 创建对象时，可以加上此消息头设置对象的权限控制策略，使用的策略为预定义的常用策略
@@ -74,7 +74,7 @@ namespace HuaweiCloudObs.Models
         public string ServerSideEncryption { get; set; }
 
         /// <summary>
-        /// SSE-KMS方式下使用该头域，该头域表示主密钥，如果用户没有提供该头域，那么默认的主密钥将会被使用
+        /// SSE-KMS 主密钥，如果用户没有提供 那么默认的主密钥将会被使用
         /// <para>支持两种格式的描述方式： </para>
         /// <para>1. regionID:domainID(租户ID):key/key_id </para>
         /// <para>2.key_id 其中regionID是使用密钥所属region的ID；domainID是使用密钥所属租户的租户ID；key_id是从数据加密服务创建的密钥ID</para>

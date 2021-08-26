@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,8 +14,6 @@ namespace HuaweiCloudObs
 {
     public abstract class BaseObsApi
     {
-        private IHttpClientFactory factory;
-
         protected HttpClient Client { get; set; }
         protected IOptionsSnapshot<HuaweicloudObsOptions> Options { get; set; }
         protected ILogger Logger {  get; set; }
@@ -22,44 +21,8 @@ namespace HuaweiCloudObs
         protected BaseObsApi(IOptionsSnapshot<HuaweicloudObsOptions> options, IHttpClientFactory factory, ILogger<BaseObsApi> logger)
         {
             Options = options;
-            this.factory = factory;
+            Client = factory.CreateClient(ObsConsts.ClientName);
             Logger = logger;
-        }
-
-        /// <summary>
-        /// 设置请求头
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="input"></param>
-        protected void SetHeaders(HttpRequestMessage request, object input)
-        {
-            foreach (var p in input.GetType().GetProperties().Where(p => p.PropertyType.IsPublic))
-            {
-                object value = p.GetValue(input);
-                if(value == null)
-                {
-                    continue;
-                }
-
-                string v = value switch
-                {
-                    DateTimeOffset t => t.ToString("r"),
-                    string t => t,
-                    int t => t.ToString(),
-                    float t => t.ToString(),
-                    decimal t => t.ToString(),
-                    _ => null
-                };
-
-                //嵌套对象 递归设置
-                if (v == null)
-                {
-                    SetHeaders(request, value);
-                    continue;
-                }
-
-                request.Headers.TryAddWithoutValidation(((XmlNameAttribute)p.GetCustomAttributes(typeof(XmlNameAttribute), false)[0]).Name, v);
-            }
         }
 
         protected async Task<object> SendInternalAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, ResultType resultType = ResultType.Object, CancellationToken cancellationToken = default)
@@ -170,6 +133,21 @@ namespace HuaweiCloudObs
         public async Task<HttpResponseMessage> SendAndReturnResponseAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
             return (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken);
+        }
+
+        /// <summary>
+        /// 发送请求 通过请求头返回结果
+        /// </summary>
+        /// <typeparam name="T">返回类型</typeparam>
+        /// <param name="request">请求</param>
+        /// <param name="query">单个资源请求  和queries 二选一</param>
+        /// <param name="queries">多个资源请求</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<T> SendAndReturnByHeaders<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
+        {
+            var response = (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken);
+            return response.Headers.GetByHeader<T>();
         }
     }
 }

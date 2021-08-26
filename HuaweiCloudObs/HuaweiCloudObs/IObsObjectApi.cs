@@ -19,11 +19,12 @@ namespace HuaweiCloudObs
 
         /// <summary>
         /// 上传对象
+        /// <para>在桶未开启多版本的情况下，如果在指定的桶内已经有相同的对象键值的对象，用户上传的新对象会覆盖原来的对象</para>
         /// </summary>
         /// <param name="name">对象名</param>
         /// <param name="data">对象数据</param>
         /// <returns></returns>
-        Task PutAsync([NotNull] string name, [NotNull] byte[] data, XobsHeaders headers = null, CancellationToken cancellationToken = default);
+        Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] byte[] data, UploadObjectOptions options = null, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -69,5 +70,7 @@ namespace HuaweiCloudObs
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<DeleteObjectsResult> DeleteBatchAsync([NotNull] DeleteObjectsRequest input, CancellationToken cancellationToken = default);
+
+
     }
 }

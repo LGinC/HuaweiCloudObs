@@ -17,7 +17,7 @@ var buckets = await bucketApi.GetBucketsAsync(default);
 var objectApi = provider.GetRequiredService<IObsObjectApi>();
 objectApi.Bucket = buckets.Buckets[0].Name;
 var fileName = "appsettings.json";
-await objectApi.PutAsync(fileName, File.ReadAllBytes(fileName));
+var uploadResult = await objectApi.PutAsync(fileName, File.ReadAllBytes(fileName));
 var bytes = await objectApi.GetBytesAsync(fileName, new HuaweiCloudObs.Models.GetObjectRequest { Attname = "attname=over.json", IfModifiedSince = DateTimeOffset.Now.AddDays(-1) });
 Console.WriteLine($"json: {System.Text.Encoding.UTF8.GetString(bytes)}");
 

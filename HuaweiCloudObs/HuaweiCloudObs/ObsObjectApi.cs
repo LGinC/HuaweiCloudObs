@@ -27,14 +27,14 @@ namespace HuaweiCloudObs
             }
         }
 
-        public Task PutAsync([NotNull]string name, [NotNull] byte[] data, XobsHeaders headers = null, CancellationToken cancellationToken = default)
+        public Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] byte[] data, UploadObjectOptions headers = null, CancellationToken cancellationToken = default)
         {
             CheckSetBucket();
             HttpRequestMessage request = new(HttpMethod.Put, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
-            SetHeaders(request, headers);
+            request.SetHeaders(headers);
             request.Content = new ByteArrayContent(data);
             request.Content.Headers.Add("Content-MD5", Signature.Md5(data));
-            return SendNoReturnAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+            return SendAndReturnByHeaders<UploadObjectResult>(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
 
@@ -44,7 +44,7 @@ namespace HuaweiCloudObs
             HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
             if (input != null)
             {
-                SetHeaders(request, input);
+                request.SetHeaders(input);
             }
             return SendAndReturnStreamAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
@@ -55,7 +55,7 @@ namespace HuaweiCloudObs
             HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
             if (input != null)
             {
-                SetHeaders(request, input);
+                request.SetHeaders(input);
             }
             return SendAndReturnBytesAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
@@ -66,7 +66,7 @@ namespace HuaweiCloudObs
             HttpRequestMessage request = new(HttpMethod.Get, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
             if (input != null)
             {
-                SetHeaders(request, input);
+                request.SetHeaders(input);
             }
             return SendAndReturnResponseAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
@@ -75,7 +75,7 @@ namespace HuaweiCloudObs
         {
             CheckSetBucket();
             HttpRequestMessage request = new(HttpMethod.Delete, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
-            if(!string.IsNullOrWhiteSpace(versionId))
+            if (!string.IsNullOrWhiteSpace(versionId))
             {
                 request.Headers.Add(nameof(versionId), versionId);
             }
@@ -83,16 +83,16 @@ namespace HuaweiCloudObs
             return SendNoReturnAsync(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
-        public  Task<DeleteObjectsResult> DeleteBatchAsync([NotNull] DeleteObjectsRequest input, CancellationToken cancellationToken = default)
+        public Task<DeleteObjectsResult> DeleteBatchAsync([NotNull] DeleteObjectsRequest input, CancellationToken cancellationToken = default)
         {
             CheckSetBucket();
             var s = ObsXmlSerializer.Serialize(input);
             HttpRequestMessage request = new(HttpMethod.Post, $"https://{Bucket}.{Options.Value.EndPoint}/?delete")
             {
-                Content = new StringContent(s.ToString(), Encoding.UTF8,"application/xml")
+                Content = new StringContent(s.ToString(), Encoding.UTF8, "application/xml")
             };
             request.Headers.Add("Content-SHA256", Signature.Sha256(s.ToString()));
-            return SendAsync<DeleteObjectsResult>(request, $"/{Bucket}/?delete",  cancellationToken: cancellationToken);
+            return SendAsync<DeleteObjectsResult>(request, $"/{Bucket}/?delete", cancellationToken: cancellationToken);
         }
     }
 }
