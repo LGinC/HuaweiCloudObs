@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HuaweiCloudObs", "HuaweiClo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObsTest", "ObsTest\ObsTest.csproj", "{5AA4032C-B96F-4238-8D85-D136045C5E3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuaweiCloudObsUnitTests", "HuaweiCloudObsUnitTests\HuaweiCloudObsUnitTests.csproj", "{0AE9CEA6-027A-4D04-BD06-CB74CF05A5D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AA4032C-B96F-4238-8D85-D136045C5E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AE9CEA6-027A-4D04-BD06-CB74CF05A5D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AE9CEA6-027A-4D04-BD06-CB74CF05A5D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AE9CEA6-027A-4D04-BD06-CB74CF05A5D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AE9CEA6-027A-4D04-BD06-CB74CF05A5D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

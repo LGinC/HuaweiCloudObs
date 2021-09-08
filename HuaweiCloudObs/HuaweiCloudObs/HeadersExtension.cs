@@ -79,9 +79,9 @@ namespace HuaweiCloudObs
                 }
 
                 string key = (attributes.First() as XmlNameAttribute).Name;
-                if (headers.TryGetValues(key, out var value))
+                if (headers.TryGetValues(key, out var values))
                 {
-                    p.SetValue(result, value);
+                    p.SetValue(result, values.Count() == 1 ? values.First() : values);
                 }
             }
 

@@ -1,4 +1,6 @@
-﻿namespace HuaweiCloudObs.Models
+﻿using System;
+
+namespace HuaweiCloudObs.Models
 {
 
     public class UploadObjectResult
@@ -44,5 +46,16 @@
         /// </summary>
         [XmlName("x-obs-storage-class")]
         public StorageClass StorageClass { get; set; }
+
+        /// <summary>
+        /// 上传时间
+        /// </summary>
+        public DateTimeOffset Date { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlName("x-obs-id-2")]
+        public string ObsId2 { get; set; }
     }
 }

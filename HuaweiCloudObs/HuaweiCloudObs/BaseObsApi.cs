@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +42,7 @@ namespace HuaweiCloudObs
                 : Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), headers, queries);
             request.Headers.Add("Authorization", sign);
             var result = await Client.SendAsync(request, cancellationToken);
-            //Console.WriteLine(await result.Content.ReadAsStringAsync());
+            //Logger.LogInformation(await result.Content.ReadAsStringAsync());
             if (result.IsSuccessStatusCode)
             {
                 switch (resultType)

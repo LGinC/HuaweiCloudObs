@@ -13,7 +13,11 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTimeOffset CreationDate { get; set; }
+        [XmlIgnore]
+        public DateTimeOffset CreationDate { get => string.IsNullOrEmpty(CreationDateString) ? default : DateTimeOffset.Parse(CreationDateString); }
+
+        [XmlName("CreationDate")]
+        public string CreationDateString {  get; set; }
 
         /// <summary>
         /// 所在区域

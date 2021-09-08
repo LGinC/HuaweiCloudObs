@@ -55,7 +55,11 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 对象最近一次被修改的时间（UTC时间）
         /// </summary>
-        public DateTimeOffset LastModified { get; set; }
+        [XmlIgnore]
+        public DateTimeOffset LastModified { get => string.IsNullOrEmpty(LastModifiedString) ? default : DateTimeOffset.Parse(LastModifiedString);  }
+
+        [XmlName("LastModified")]
+        public string LastModifiedString { get; set; }
 
         /// <summary>
         /// 对象的base64编码的128位MD5摘要
