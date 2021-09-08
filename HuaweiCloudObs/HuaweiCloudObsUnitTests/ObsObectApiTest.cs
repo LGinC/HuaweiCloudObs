@@ -32,8 +32,17 @@ namespace HuaweiCloudObsUnitTests
         }
 
         [Fact]
+        public async Task PutStreamTest()
+        {
+            var result = await objectApi.PutAsync(objectName, File.OpenRead(objectName));
+            result.Date.ShouldBeLessThan(DateTimeOffset.UtcNow);
+            result.ObsId2.ShouldNotBeNull();
+        }
+
+        [Fact]
         public async Task GetBytesTest()
         {
+            await objectApi.PutAsync(objectName, File.ReadAllBytes(objectName));
             var result = await objectApi.GetBytesAsync(objectName);
             result.Length.ShouldBeGreaterThan(1);
             logger.LogInformation(Encoding.UTF8.GetString(result));
@@ -50,6 +59,7 @@ namespace HuaweiCloudObsUnitTests
         [Fact]
         public async Task GetObjectResponseTest()
         {
+            await objectApi.PutAsync(objectName, File.ReadAllBytes(objectName));
             var response = await objectApi.GetObjectResponseAsync(objectName);
             var str = await response.Content.ReadAsStringAsync();
             str.Length.ShouldBeGreaterThan(1);
@@ -59,11 +69,11 @@ namespace HuaweiCloudObsUnitTests
         [Fact]
         public async Task DeleteTest()
         {
+            await objectApi.PutAsync(objectName, File.ReadAllBytes(objectName));
             await objectApi.DeleteAsync(objectName);
             try
             {
                 var bytes = await objectApi.GetBytesAsync(objectName);
-
             }
             catch (Exception e)
             {

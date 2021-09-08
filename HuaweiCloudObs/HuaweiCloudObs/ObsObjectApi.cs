@@ -37,6 +37,15 @@ namespace HuaweiCloudObs
             return SendAndReturnByHeaders<UploadObjectResult>(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
         }
 
+        public Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull]Stream stream, UploadObjectOptions headers = null, CancellationToken cancellationToken = default)
+        {
+            CheckSetBucket();
+            HttpRequestMessage request = new(HttpMethod.Put, $"https://{Bucket}.{Options.Value.EndPoint}/{name}");
+            request.SetHeaders(headers);
+            request.Content = new StreamContent(stream);
+            return SendAndReturnByHeaders<UploadObjectResult>(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+        }
+
 
         public Task<Stream> GetAsync([NotNull] string name, GetObjectRequest input = null, CancellationToken cancellationToken = default)
         {
