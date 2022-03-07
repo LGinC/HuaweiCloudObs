@@ -42,7 +42,9 @@ namespace HuaweiCloudObs
                 : Signature.GetSign(options.AccessKey, options.SecretKey, request.Method.ToString(), headers, queries);
             request.Headers.Add("Authorization", sign);
             var result = await Client.SendAsync(request, cancellationToken);
-            //Logger.LogInformation(await result.Content.ReadAsStringAsync());
+#if DEBUG
+            Logger.LogInformation(await result.Content.ReadAsStringAsync());
+#endif
             if (result.IsSuccessStatusCode)
             {
                 switch (resultType)
@@ -72,8 +74,9 @@ namespace HuaweiCloudObs
                 return null;
             }
             var e =  ObsXmlSerializer.Deserialize<ErrorResult>(eStream);
-            Logger.LogError("obs请求失败", request);
-            Logger.LogError(System.Text.Json.JsonSerializer.Serialize(e, new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
+            Logger.LogError("obs请求header: {0}", System.Text.Json.JsonSerializer.Serialize(request.Headers));
+            Logger.LogError("obs请求content: {0}", await (request.Content?.ReadAsStringAsync() ?? Task.FromResult("")));
+            Logger.LogError("obs请求返回结果: {0}", System.Text.Json.JsonSerializer.Serialize(e, new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
             throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
 

@@ -1,8 +1,10 @@
 ﻿using HuaweiCloudObs;
+using HuaweiCloudObs.Models.Buckets;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,7 +29,23 @@ namespace HuaweiCloudObsUnitTests
             var buckets = await bucketApi.GetBucketsAsync();
             buckets.Buckets.Count.ShouldBeGreaterThan(0);
             var bucket = buckets.Buckets[0];
-            bucket.CreationDate.ShouldBeLessThan(DateTimeOffset.UtcNow);
+            bucket.CreationDate.ShouldNotBe(default);
+        }
+
+        [Fact]
+        public async Task GetMetadataTest()
+        {
+            var buckets = await bucketApi.GetBucketsAsync();
+            var meta = await bucketApi.GetMetadataAsync(buckets.Buckets[0].Name);
+            meta.Location.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task GetLocationTest()
+        {
+            var buckets = await bucketApi.GetBucketsAsync();
+            var r = await bucketApi.GetLocationAsync(buckets.Buckets[0].Name);
+            r.ShouldBe(buckets.Buckets[0].Location);
         }
 
         [Fact]
@@ -38,6 +56,18 @@ namespace HuaweiCloudObsUnitTests
             var buckets = await bucketApi.GetBucketsAsync();
             var objs = await bucketApi.GetObjectsAsync(buckets.Buckets[0].Name);
             objs.Contents.Count.ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task CreateAndDeleteTest()
+        {
+            var name = "test-create-and-delete";
+            await bucketApi.CreateAsync(new CreateBucketRequest { BucketName = name, Location = "cn-east-3" }, new CreateBucketHeaders { Acl = HuaweiCloudObsDefine.AcessControlLists.PublicReadDelivered, StorageClass = HuaweiCloudObs.Models.StorageClass.COLD});
+            var buckets = await bucketApi.GetBucketsAsync();
+            buckets.Buckets.Any(b=> b.Name == name).ShouldBeTrue();
+            await bucketApi.DeleteAsync(name);
+            buckets = await bucketApi.GetBucketsAsync();
+            buckets.Buckets.Any(b => b.Name == name).ShouldBeFalse();
         }
     }
 }

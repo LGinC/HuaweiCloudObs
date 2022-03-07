@@ -1,46 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace HuaweiCloudObs.Models
+﻿namespace HuaweiCloudObs.Models
 {
-    public class UploadObjectOptions
+    public class UploadObjectOptions : BaseRequestHeaders
     {
-        /// <summary>
-        /// 创建对象时，可以加上此消息头设置对象的权限控制策略，使用的策略为预定义的常用策略
-        /// <para>包括：private；public-read；public-read-write（各策略详细说明见<see href="https://support.huaweicloud.com/perms-cfg-obs/obs_40_0005.html">ACL</see>章节的“使用头域设置ACL”）。</para>
-        /// </summary>
-        [XmlName("x-obs-acl")]
-        public string Acl { get; set; }
-
-        /// <summary>
-        /// 租户列表 授权该租户下所有用户有读对象和获取对象元数据的权限
-        /// </summary>
-        [XmlName("x-obs-grant-read")]
-        public IEnumerable<string> GrantRead { get; set; }
-
-        /// <summary>
-        /// 租户列表  授权该租户下所有用户有获取对象ACL的权限
-        /// </summary>
-        [XmlName("x-obs-grant-read-acp")]
-        public IEnumerable<string> GrantReadAcp { get; set; }
-
-        /// <summary>
-        /// 租户列表  授权该租户下所有用户有写对象ACL的权限
-        /// </summary>
-        [XmlName("x-obs-grant-read-acp")]
-        public IEnumerable<string> GrantWriteAcp { get; set; }
-
-        /// <summary>
-        /// 租户列表  授权该租户下所有用户有写对象ACL的权限
-        /// </summary>
-        [XmlName("x-obs-grant-full-control")]
-        public IEnumerable<string> GrantFullControl { get; set; }
-
-        /// <summary>
-        /// 对象的存储类型 未设置此则将对象的存储类型设置为桶的类型设置
-        /// </summary>
-        [XmlName("x-obs-storage-class")]
-        public StorageClass StorageClass { get; set; }
-
         /// <summary>
         /// 元数据 <see href="https://support.huaweicloud.com/ugobs-obs/obs_41_0025.html">官方文档</see>
         /// </summary>

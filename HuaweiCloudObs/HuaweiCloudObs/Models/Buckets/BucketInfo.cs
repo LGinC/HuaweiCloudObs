@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace HuaweiCloudObs.Models
+namespace HuaweiCloudObs.Models.Buckets
 {
     public class BucketInfo
     {
@@ -13,11 +13,8 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 创建时间
         /// </summary>
-        [XmlIgnore]
-        public DateTimeOffset CreationDate { get => string.IsNullOrEmpty(CreationDateString) ? default : DateTimeOffset.Parse(CreationDateString); }
-
-        [XmlName("CreationDate")]
-        public string CreationDateString {  get; set; }
+        [XmlElement(ElementName = "CreationDate")]
+        public DateTimeOffset CreationDate { get; set; }
 
         /// <summary>
         /// 所在区域

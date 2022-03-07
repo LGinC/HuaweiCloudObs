@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace HuaweiCloudObs.Models
+namespace HuaweiCloudObs.Models.Buckets
 {
     [XmlRoot("ListBucketResult", Namespace = "http://obs.myhwclouds.com/doc/2015-06-30/")]
     public class ListBucketResult : BaseResult
@@ -55,11 +55,8 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 对象最近一次被修改的时间（UTC时间）
         /// </summary>
-        [XmlIgnore]
-        public DateTimeOffset LastModified { get => string.IsNullOrEmpty(LastModifiedString) ? default : DateTimeOffset.Parse(LastModifiedString);  }
-
-        [XmlName("LastModified")]
-        public string LastModifiedString { get; set; }
+        [XmlElement(ElementName = "LastModified")]
+        public DateTimeOffset LastModified { get; set; }
 
         /// <summary>
         /// 对象的base64编码的128位MD5摘要
@@ -79,6 +76,6 @@ namespace HuaweiCloudObs.Models
         /// <summary>
         /// 用户信息，包含用户DomainId和用户名
         /// </summary>
-        public Owner Owner {  get; set; }
+        public Owner Owner { get; set; }
     }
 }

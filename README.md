@@ -81,11 +81,12 @@ public class MyObsAppService : ApplicationService
 ## 桶操作
 ### 基础操作
 + [x] [获取桶列表](https://support.huaweicloud.com/api-obs/obs_04_0020.html) 
-+ [ ] [创建桶](https://support.huaweicloud.com/api-obs/obs_04_0021.html)
++ [x] [创建桶](https://support.huaweicloud.com/api-obs/obs_04_0021.html)
 + [x] [列举桶内对象](https://support.huaweicloud.com/api-obs/obs_04_0010.html)
-+ [ ] [获取桶元数据](https://support.huaweicloud.com/api-obs/obs_04_0023.html)
-+ [ ] [获取桶区域位置](https://support.huaweicloud.com/api-obs/obs_04_0024.html)
-+ [ ] [删除桶](https://support.huaweicloud.com/api-obs/obs_04_0025.html)
++ [x] [列举桶内对象v2](https://support.huaweicloud.com/api-obs/obs_04_0160.html)
++ [x] [获取桶元数据](https://support.huaweicloud.com/api-obs/obs_04_0023.html)
++ [x] [获取桶区域位置](https://support.huaweicloud.com/api-obs/obs_04_0024.html)
++ [x] [删除桶](https://support.huaweicloud.com/api-obs/obs_04_0025.html)
 ### 高级操作
 + [ ] [设置桶策略](https://support.huaweicloud.com/api-obs/obs_04_0027.html)
 + [ ] [获取桶策略](https://support.huaweicloud.com/api-obs/obs_04_0028.html)

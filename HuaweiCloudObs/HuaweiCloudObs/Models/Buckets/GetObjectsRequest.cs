@@ -1,4 +1,4 @@
-﻿namespace HuaweiCloudObs.Models
+﻿namespace HuaweiCloudObs.Models.Buckets
 {
     public class GetObjectsRequest
     {

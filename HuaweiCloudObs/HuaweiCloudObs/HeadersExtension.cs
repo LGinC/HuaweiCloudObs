@@ -35,7 +35,7 @@ namespace HuaweiCloudObs
                     int t => t.ToString(),
                     float t => t.ToString(),
                     decimal t => t.ToString(),
-                    Enum t => t.ToString(),
+                    Enum t => t.GetEnumMemberOrDefault(),
                     IEnumerable<string> t => string.Join(",", t),
                     _ => null
                 };
@@ -52,7 +52,8 @@ namespace HuaweiCloudObs
                     continue;
                 }
 
-                request.Headers.TryAddWithoutValidation((p.GetCustomAttributes(typeof(XmlNameAttribute), false)[0] as XmlNameAttribute).Name, v);
+                var attrs = p.GetCustomAttributes(typeof(XmlNameAttribute), false);
+                request.Headers.TryAddWithoutValidation(attrs != null && attrs.Length > 0 ? (attrs[0] as XmlNameAttribute).Name : p.Name, v);
             }
         }
 
@@ -66,7 +67,7 @@ namespace HuaweiCloudObs
         {
             if (headers == null)
             {
-                return default(T);
+                return default;
             }
             Type t = typeof(T);
             T result = (T)Activator.CreateInstance(t);
@@ -81,7 +82,15 @@ namespace HuaweiCloudObs
                 string key = (attributes.First() as XmlNameAttribute).Name;
                 if (headers.TryGetValues(key, out var values))
                 {
-                    p.SetValue(result, values.Count() == 1 ? values.First() : values);
+                    if (p.PropertyType.IsEnum)
+                    {
+                        p.SetValue(
+                            result, Enum.Parse(p.PropertyType, values.First()), null);
+                    }
+                    else
+                    {
+                        p.SetValue(result, values.Count() == 1 ? values.First() : values);
+                    }
                 }
             }
 
@@ -114,7 +123,7 @@ namespace HuaweiCloudObs
                     int t => t.ToString(),
                     float t => t.ToString(),
                     decimal t => t.ToString(),
-                    Enum t => t.ToString(),
+                    Enum t => t.GetEnumMemberOrDefault(),
                     IEnumerable<string> t => string.Join(",", t),
                     _ => null
                 };
@@ -137,7 +146,7 @@ namespace HuaweiCloudObs
                 parameters.Add(key, v);
             }
 
-            if(parameters.Count == 0)
+            if (parameters.Count == 0)
             {
                 return;
             }

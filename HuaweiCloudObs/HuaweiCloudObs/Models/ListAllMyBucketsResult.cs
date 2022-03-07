@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HuaweiCloudObs.Models.Buckets;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace HuaweiCloudObs.Models

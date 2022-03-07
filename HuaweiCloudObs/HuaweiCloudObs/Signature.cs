@@ -65,7 +65,6 @@ namespace HuaweiCloudObs
 			//当有自定义字段x-obs-date时，参数date按照空字符串处理；
 			string date = headers.ContainsKey("x-obs-date") ? string.Empty : headers.FirstOrDefault(h => h.Key == "date").Value?.First();
 			string stringToSign = GetStringToSign(method, md5, contentType, date, GetCanonicalizedHeaders(headers), resource);
-            //Console.WriteLine(stringToSign);
             return $"OBS {accessKey}:{HmacSha1(secretKey, stringToSign)}";
 		}
 
@@ -76,6 +75,10 @@ namespace HuaweiCloudObs
 
 		static string GetStringToSign(string method, string contentMd5, string contentType, string date, string headers, string resource)
 		{
+			if(!string.IsNullOrEmpty(headers) && !headers.EndsWith("\n"))
+            {
+				headers += "\n";
+			}
 			return $"{method}\n{contentMd5}\n{contentType}\n{date}\n{headers}{resource}";
 		}
 
@@ -109,7 +112,7 @@ namespace HuaweiCloudObs
 				else
 				{
 					//第二行开始 开头添加换行
-					sb.AppendLine();
+					sb.Append('\n');
 				}
 				sb.AppendFormat("{0}:{1}", d.Key, d.Value);
 			}
