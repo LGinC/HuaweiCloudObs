@@ -74,29 +74,28 @@ namespace HuaweiCloudObs
             foreach (var p in t.GetProperties().Where(p => p.PropertyType.IsPublic))
             {
                 var attributes = p.GetCustomAttributes(typeof(XmlNameAttribute), false);
-                if (attributes == null || !attributes.Any())
-                {
-                    continue;
-                }
 
-                string key = (attributes.First() as XmlNameAttribute).Name;
+                string key = (attributes.FirstOrDefault() as XmlNameAttribute)?.Name ?? p.Name;
                 if (headers.TryGetValues(key, out var values))
                 {
-                    if (p.PropertyType.IsEnum)
-                    {
-                        p.SetValue(
-                            result, Enum.Parse(p.PropertyType, values.First()), null);
-                    }
-                    else
-                    {
-                        p.SetValue(result, values.Count() == 1 ? values.First() : values);
-                    }
+                    p.SetValue(result, ConvertValue(p.PropertyType, values));
                 }
             }
-
             return result;
         }
+
+        private static object ConvertValue(Type type, IEnumerable<string> values) => type switch
+        {
+            Type t when t == typeof(string) => values.Count() == 1 ? values.First() : values,
+            Type t when t == typeof(DateTimeOffset) => GetFirstOrAll(values, v=> DateTimeOffset.Parse(v)),
+            Type t when t.IsEnum => GetFirstOrAll(values, v=>Enum.Parse(type,v)),
+            _ => values.Count() == 1 ? values.First() : values,
+        };
+
+        private static object GetFirstOrAll(IEnumerable<string> values, Func<string, object> parse) =>
+            values.Count() == 1 ? parse(values.First()) : values.Select(v=> parse(v));
     }
+    
 
     public static class RequestExtenstion
     {
@@ -107,7 +106,7 @@ namespace HuaweiCloudObs
                 return;
             }
 
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            Dictionary<string, string> parameters = new ();
             foreach (var p in parameterObject.GetType().GetProperties().Where(p => p.PropertyType.IsPublic))
             {
                 object value = p.GetValue(parameterObject);

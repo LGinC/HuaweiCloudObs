@@ -34,7 +34,7 @@ namespace HuaweiCloudObs
             request.SetHeaders(headers);
             request.Content = new ByteArrayContent(data);
             request.Content.Headers.Add("Content-MD5", Signature.Md5(data));
-            return SendAndReturnByHeaders<UploadObjectResult>(request, $"/{Bucket}/{name}", cancellationToken: cancellationToken);
+            return SendAndReturnByHeaders<UploadObjectResult>(request, cancellationToken: cancellationToken);
         }
 
         public Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull]Stream stream, UploadObjectOptions headers = null, CancellationToken cancellationToken = default)

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,8 +26,14 @@ namespace HuaweiCloudObs
             Logger = logger;
         }
 
-        protected async Task<object> SendInternalAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, ResultType resultType = ResultType.Object, CancellationToken cancellationToken = default)
+        protected async Task<object> SendInternalAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, ResultType resultType = ResultType.Object, bool returnJson = false, CancellationToken cancellationToken = default)
         {
+            if(query == null && queries == null)
+            {
+                var bucket = request.RequestUri.DnsSafeHost.Replace(Options.Value.EndPoint, "").Replace(".", "");
+                query = $"{(string.IsNullOrEmpty(bucket) ? "" : $"/{bucket}")}{request.RequestUri.LocalPath}{request.RequestUri.Query}";
+                Logger.LogInformation($"query: {query}");
+            }
             request.Headers.Add("Date", DateTimeOffset.UtcNow.ToString("r"));
             var headers = request.Headers.ToDictionary(h => h.Key.ToLower(), h => h.Value);
             //合并content中的请求头
@@ -50,6 +58,10 @@ namespace HuaweiCloudObs
                 switch (resultType)
                 {
                     case ResultType.Object:
+                        if (returnJson)
+                        {
+                            return await result.Content.ReadFromJsonAsync<T>();
+                        }
                         using (var stream = await result.Content.ReadAsStreamAsync())
                         {
                             return ObsXmlSerializer.Deserialize<T>(stream);
@@ -80,6 +92,13 @@ namespace HuaweiCloudObs
             throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
 
+        public async Task<TResult> GetAsync<TRequest, TResult>(string url, TRequest request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
+        {
+            HttpRequestMessage rq = new(HttpMethod.Get, url);
+            rq.Content = new StringContent(JsonSerializer.Serialize(request));
+            return (TResult)await SendInternalAsync<TResult>(rq, query, queries, ResultType.Object, cancellationToken: cancellationToken);
+        }
+
         /// <summary>
         /// 发送请求
         /// </summary>
@@ -90,7 +109,12 @@ namespace HuaweiCloudObs
         /// <returns></returns>
         public async Task<T> SendAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            return (T)await SendInternalAsync<T>(request, query, queries, ResultType.Object, cancellationToken);
+            return (T)await SendInternalAsync<T>(request, query, queries, ResultType.Object, cancellationToken: cancellationToken);
+        }
+
+        public async Task<T> SendAndReturnJsonAsync<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
+        {
+            return (T)await SendInternalAsync<T>(request, query, queries, ResultType.Object, true, cancellationToken);
         }
 
         /// <summary>
@@ -103,7 +127,7 @@ namespace HuaweiCloudObs
         /// <returns></returns>
         public Task SendNoReturnAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            return SendInternalAsync<Task>(request, query, queries, ResultType.Task, cancellationToken);
+            return SendInternalAsync<Task>(request, query, queries, ResultType.Task, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -116,7 +140,7 @@ namespace HuaweiCloudObs
         /// <returns></returns>
         public async Task<Stream> SendAndReturnStreamAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            return (Stream)await SendInternalAsync<Stream>(request, query, queries, ResultType.Stream, cancellationToken);
+            return (Stream)await SendInternalAsync<Stream>(request, query, queries, ResultType.Stream, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -129,12 +153,12 @@ namespace HuaweiCloudObs
         /// <returns></returns>
         public async Task<byte[]> SendAndReturnBytesAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            return (byte[])await SendInternalAsync<byte[]>(request, query, queries, ResultType.Bytes, cancellationToken);
+            return (byte[])await SendInternalAsync<byte[]>(request, query, queries, ResultType.Bytes, cancellationToken: cancellationToken);
         }
 
         public async Task<HttpResponseMessage> SendAndReturnResponseAsync(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            return (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken);
+            return (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -148,7 +172,7 @@ namespace HuaweiCloudObs
         /// <returns></returns>
         public async Task<T> SendAndReturnByHeaders<T>(HttpRequestMessage request, string query = null, SortedDictionary<string, string> queries = null, CancellationToken cancellationToken = default)
         {
-            var response = (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken);
+            var response = (HttpResponseMessage)await SendInternalAsync<HttpResponseMessage>(request, query, queries, ResultType.HttpResponse, cancellationToken: cancellationToken);
             return response.Headers.GetByHeader<T>();
         }
     }
