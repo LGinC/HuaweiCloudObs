@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace HuaweiCloudObs
+namespace HuaweiCloudObs.Utils
 {
     public static class StringExtension
     {

@@ -1,5 +1,6 @@
 ﻿using HuaweiCloudObs.Models;
 using HuaweiCloudObs.Models.Buckets;
+using HuaweiCloudObs.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http;

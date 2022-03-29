@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace HuaweiCloudObs
+namespace HuaweiCloudObs.Utils
 {
     public class Utf8StringWriter : StringWriter
     {

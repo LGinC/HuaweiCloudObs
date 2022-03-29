@@ -1,4 +1,5 @@
 ﻿using HuaweiCloudObs.Models;
+using HuaweiCloudObs.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -86,9 +87,9 @@ namespace HuaweiCloudObs
                 return null;
             }
             var e =  ObsXmlSerializer.Deserialize<ErrorResult>(eStream);
-            Logger.LogError("obs请求header: {0}", System.Text.Json.JsonSerializer.Serialize(request.Headers));
+            Logger.LogError("obs请求header: {0}", JsonSerializer.Serialize(request.Headers));
             Logger.LogError("obs请求content: {0}", await (request.Content?.ReadAsStringAsync() ?? Task.FromResult("")));
-            Logger.LogError("obs请求返回结果: {0}", System.Text.Json.JsonSerializer.Serialize(e, new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
+            Logger.LogError("obs请求返回结果: {0}", JsonSerializer.Serialize(e, new JsonSerializerOptions { WriteIndented=true }));
             throw new InvalidOperationException($"{e.Code}-{e.Message}");
         }
 

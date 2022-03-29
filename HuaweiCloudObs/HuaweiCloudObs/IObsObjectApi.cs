@@ -24,7 +24,7 @@ namespace HuaweiCloudObs
         /// <param name="name">对象名</param>
         /// <param name="data">对象数据</param>
         /// <returns></returns>
-        Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] byte[] data, UploadObjectOptions options = null, CancellationToken cancellationToken = default);
+        Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] byte[] data, SignatureDto signature = null, UploadObjectOptions options = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 上传对象 
@@ -35,7 +35,17 @@ namespace HuaweiCloudObs
         /// <param name="headers"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] Stream stream, UploadObjectOptions headers = null, CancellationToken cancellationToken = default);
+        public Task<UploadObjectResult> PutAsync([NotNull] string name, [NotNull] Stream stream, SignatureDto signature = null, UploadObjectOptions headers = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 上传对象
+        /// <para>在桶未开启多版本的情况下，如果在指定的桶内已经有相同的对象键值的对象，用户上传的新对象会覆盖原来的对象 不会传入md5</para>
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="options"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<UploadObjectResult> PostAsync([NotNull] byte[] data, [NotNull] PostObjectOptions options = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 获取对象流

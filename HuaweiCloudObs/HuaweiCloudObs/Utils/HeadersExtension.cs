@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace HuaweiCloudObs
+namespace HuaweiCloudObs.Utils
 {
     public static class HeadersExtension
     {
@@ -45,10 +45,19 @@ namespace HuaweiCloudObs
                     continue;
                 }
 
-                //嵌套对象 递归设置
-                if (v == null)
+                //添加x-obs-meta-*
+                if (v == null && p.Name == "CustomMeta")
                 {
-                    SetHeaders(request, value);
+                    foreach (var item in value as Dictionary<string, string>)
+                    {
+                        request.Headers.TryAddWithoutValidation(item.Key.StartsWith("x-obs-meta-") ? item.Key :
+                            $"x-obs-meta-{item.Key.ToLower()}", item.Value);
+                    }
+                }
+                //嵌套对象 递归设置
+                else if (v == null)
+                {
+                    request.SetHeaders(value);
                     continue;
                 }
 
@@ -87,15 +96,15 @@ namespace HuaweiCloudObs
         private static object ConvertValue(Type type, IEnumerable<string> values) => type switch
         {
             Type t when t == typeof(string) => values.Count() == 1 ? values.First() : values,
-            Type t when t == typeof(DateTimeOffset) => GetFirstOrAll(values, v=> DateTimeOffset.Parse(v)),
-            Type t when t.IsEnum => GetFirstOrAll(values, v=>Enum.Parse(type,v)),
-            _ => values.Count() == 1 ? values.First() : values,
+            Type t when t == typeof(DateTimeOffset) => GetFirstOrAll(values, v => DateTimeOffset.Parse(v)),
+            Type t when t.IsEnum => GetFirstOrAll(values, v => Enum.Parse(type, v)),
+            _ => GetFirstOrAll(values, v => Convert.ChangeType(v, type)),
         };
 
         private static object GetFirstOrAll(IEnumerable<string> values, Func<string, object> parse) =>
-            values.Count() == 1 ? parse(values.First()) : values.Select(v=> parse(v));
+            values.Count() == 1 ? parse(values.First()) : values.Select(v => parse(v));
     }
-    
+
 
     public static class RequestExtenstion
     {
@@ -106,7 +115,7 @@ namespace HuaweiCloudObs
                 return;
             }
 
-            Dictionary<string, string> parameters = new ();
+            Dictionary<string, string> parameters = new();
             foreach (var p in parameterObject.GetType().GetProperties().Where(p => p.PropertyType.IsPublic))
             {
                 object value = p.GetValue(parameterObject);
@@ -135,7 +144,7 @@ namespace HuaweiCloudObs
                 //嵌套对象 递归设置
                 if (v == null)
                 {
-                    SetQueryParam(request, value);
+                    request.SetQueryParam(value);
                     continue;
                 }
                 var attributes = p.GetCustomAttributes(typeof(XmlNameAttribute), false);

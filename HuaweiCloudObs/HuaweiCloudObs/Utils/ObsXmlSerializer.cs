@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace HuaweiCloudObs
+namespace HuaweiCloudObs.Utils
 {
     public class ObsXmlSerializer
     {

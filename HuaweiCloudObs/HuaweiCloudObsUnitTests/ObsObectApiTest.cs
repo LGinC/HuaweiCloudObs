@@ -1,4 +1,5 @@
 ﻿using HuaweiCloudObs;
+using HuaweiCloudObs.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shouldly;
@@ -27,6 +28,14 @@ namespace HuaweiCloudObsUnitTests
         public async Task PutTest()
         {
             var result = await objectApi.PutAsync(objectName, File.ReadAllBytes(objectName));
+            result.Date.ShouldBeLessThan(DateTimeOffset.UtcNow);
+            result.ObsId2.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task PostStreamTest()
+        {
+            var result = await objectApi.PostAsync(File.ReadAllBytes(objectName), new PostObjectOptions { Key = objectName, FileName = objectName });
             result.Date.ShouldBeLessThan(DateTimeOffset.UtcNow);
             result.ObsId2.ShouldNotBeNull();
         }

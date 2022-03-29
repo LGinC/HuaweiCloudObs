@@ -1,11 +1,13 @@
-﻿namespace HuaweiCloudObs.Models
+﻿using System.Collections.Generic;
+
+namespace HuaweiCloudObs.Models
 {
     public class UploadObjectOptions : BaseRequestHeaders
     {
         /// <summary>
-        /// 元数据 <see href="https://support.huaweicloud.com/ugobs-obs/obs_41_0025.html">官方文档</see>
+        /// 自定义元数据 <see href="https://support.huaweicloud.com/ugobs-obs/obs_41_0025.html">官方文档</see>
         /// </summary>
-        public ObjectMetaData MetaData { get; set; }
+        public Dictionary<string, string> CustomMeta { get; set; }
 
         /// <summary>
         /// 加入一个或多个自定义的响应头，当用户获取此对象或查询此对象元数据时，加入的自定义响应头将会在返回消息的头域中出现

@@ -1,4 +1,5 @@
 ﻿using HuaweiCloudObs;
+using HuaweiCloudObs.Models;
 using HuaweiCloudObs.Models.Buckets;
 using Microsoft.Extensions.Options;
 using Shouldly;
