@@ -34,7 +34,7 @@ public class MyObsAppService : ApplicationService
   public async Task UploadAsync(IFormFile file, string name)
   {
      var bytes = await file.GetAllBytes();
-     await _objectApi.PutAsync(name, file);
+     await _objectApi.PutAsync(name, bytes);
   }
 
   public Task DeleteAsync(string name)
