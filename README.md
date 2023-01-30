@@ -34,7 +34,7 @@ public class MyObsAppService : ApplicationService
   public async Task UploadAsync(IFormFile file, string name)
   {
      var bytes = await file.GetAllBytes();
-     await _objectApi.PutAsync(name, bytes);
+     await _objectApi.PutAsync(name, file);
   }
 
   public Task DeleteAsync(string name)
@@ -80,7 +80,7 @@ public class MyObsAppService : ApplicationService
 
 ## 桶操作
 ### 基础操作
-+ [x] [获取桶列表](https://support.huaweicloud.com/api-obs/obs_04_0020.html) 
++ [x] [获取桶列表](https://support.huaweicloud.com/api-obs/obs_04_0020.html) IObsObjectApi.
 + [x] [创建桶](https://support.huaweicloud.com/api-obs/obs_04_0021.html)
 + [x] [列举桶内对象](https://support.huaweicloud.com/api-obs/obs_04_0010.html)
 + [x] [列举桶内对象v2](https://support.huaweicloud.com/api-obs/obs_04_0160.html)

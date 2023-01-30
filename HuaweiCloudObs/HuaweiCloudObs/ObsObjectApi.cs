@@ -127,9 +127,9 @@ namespace HuaweiCloudObs
             var s = ObsXmlSerializer.Serialize(input);
             HttpRequestMessage request = new(HttpMethod.Post, $"https://{Bucket}.{Options.Value.EndPoint}/?delete")
             {
-                Content = new StringContent(s.ToString(), Encoding.UTF8, "application/xml")
+                Content = new StringContent(s, Encoding.UTF8, "application/xml")
             };
-            request.Headers.Add("Content-SHA256", Signature.Sha256(s.ToString()));
+            request.Headers.Add("Content-SHA256", Signature.Sha256(s));
             return SendAsync<DeleteObjectsResult>(request, cancellationToken: cancellationToken);
         }
     }
